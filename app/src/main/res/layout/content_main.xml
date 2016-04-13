@@ -17,4 +17,27 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Hello World!"/>
+    <Button
+        android:id="@+id/ringerModeSilent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ringer Mode Silent"
+        android:layout_centerInParent="true"
+        />
+    <Button
+        android:id="@+id/ringerModeNormal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ringer Mode Normal"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/ringerModeSilent"
+        />
+    <Button
+        android:id="@+id/ringerModeVibrate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ringer Mode Vibrate"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/ringerModeSilent"
+        />
 </RelativeLayout>
