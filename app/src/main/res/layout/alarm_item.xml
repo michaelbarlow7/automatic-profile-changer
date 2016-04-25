@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:padding="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+    <CheckBox
+        android:id="@+id/alarmCheckbox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="First alarm"
+        android:textStyle="bold"
+        android:textSize="25sp"
+        />
+    <LinearLayout
+        android:id="@+id/timesLayout"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/alarmCheckbox"
+        android:padding="5dp"
+        >
+        <TextView
+            android:id="@+id/daysTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Mon, Tue, Thu, Fri"
+            />
+        <TextView
+            android:id="@+id/timesTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="8:00 AM - 6:00 PM"
+            android:gravity="right"
+            />
+
+    </LinearLayout>
+
+</RelativeLayout>
