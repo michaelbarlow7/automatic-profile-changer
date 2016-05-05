@@ -10,9 +10,10 @@ public class DaoGenerator {
 
     public static void main(String[] args) throws Exception {
         Schema schema = new Schema(1, "com.mbarlow.automaticprofilechanger.model");
+        schema.enableKeepSectionsByDefault();
 
         Entity alarm = schema.addEntity("Alarm");
-        alarm.addIdProperty();
+        alarm.addIdProperty().autoincrement();
         alarm.addStringProperty("name");
         // Availability is signified by a bit array.
         // The first bit is whether it's enabled or not.

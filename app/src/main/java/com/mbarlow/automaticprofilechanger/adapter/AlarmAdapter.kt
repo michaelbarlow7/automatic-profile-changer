@@ -35,9 +35,9 @@ class AlarmAdapter(private var alarmList: List<Alarm>) : RecyclerView.Adapter<Al
 
         fun bindAlarm(alarm: Alarm) {
             with(alarm){
-                alarmCheckbox.text = alarm.name
+                alarmCheckbox.text = name
 //                alarmCheckbox.isChecked = alarm.enabled
-                var stringBuilder = StringBuilder();
+//                var stringBuilder = StringBuilder();
 //                if (alarm.enabledSunday){
 //                    stringBuilder.append("Sun, ");
 //                }
@@ -59,7 +59,7 @@ class AlarmAdapter(private var alarmList: List<Alarm>) : RecyclerView.Adapter<Al
 //                if (alarm.enabledSaturday){
 //                    stringBuilder.append("Sat");
 //                }
-                daysTextView.text = stringBuilder.toString()
+                daysTextView.text = alarm.daysEnabledString
 //                timesTextView.text = alarm.startTime + " - " + alarm.endTime
             }
         }
