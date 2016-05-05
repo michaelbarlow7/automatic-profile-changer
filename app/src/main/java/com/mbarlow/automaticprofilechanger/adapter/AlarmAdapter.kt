@@ -36,31 +36,31 @@ class AlarmAdapter(private var alarmList: List<Alarm>) : RecyclerView.Adapter<Al
         fun bindAlarm(alarm: Alarm) {
             with(alarm){
                 alarmCheckbox.text = alarm.name
-                alarmCheckbox.isChecked = alarm.enabled
+//                alarmCheckbox.isChecked = alarm.enabled
                 var stringBuilder = StringBuilder();
-                if (alarm.enabledSunday){
-                    stringBuilder.append("Sun, ");
-                }
-                if (alarm.enabledMonday){
-                    stringBuilder.append("Mon, ");
-                }
-                if (alarm.enabledTuesday){
-                    stringBuilder.append("Tue, ");
-                }
-                if (alarm.enabledWednesday){
-                    stringBuilder.append("Wed, ");
-                }
-                if (alarm.enabledThursday){
-                    stringBuilder.append("Thu, ");
-                }
-                if (alarm.enabledFriday){
-                    stringBuilder.append("Fri, ");
-                }
-                if (alarm.enabledSaturday){
-                    stringBuilder.append("Sat");
-                }
+//                if (alarm.enabledSunday){
+//                    stringBuilder.append("Sun, ");
+//                }
+//                if (alarm.enabledMonday){
+//                    stringBuilder.append("Mon, ");
+//                }
+//                if (alarm.enabledTuesday){
+//                    stringBuilder.append("Tue, ");
+//                }
+//                if (alarm.enabledWednesday){
+//                    stringBuilder.append("Wed, ");
+//                }
+//                if (alarm.enabledThursday){
+//                    stringBuilder.append("Thu, ");
+//                }
+//                if (alarm.enabledFriday){
+//                    stringBuilder.append("Fri, ");
+//                }
+//                if (alarm.enabledSaturday){
+//                    stringBuilder.append("Sat");
+//                }
                 daysTextView.text = stringBuilder.toString()
-                timesTextView.text = alarm.startTime + " - " + alarm.endTime
+//                timesTextView.text = alarm.startTime + " - " + alarm.endTime
             }
         }
     }
