@@ -8,7 +8,7 @@ import android.util.Pair;
 /**
  * Entity mapped to table "ALARM".
  */
-public class Alarm {
+public class Alarm implements java.io.Serializable {
 
     private Long id;
     private String name;

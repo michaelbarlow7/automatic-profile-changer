@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.widget.ArrayAdapter
 import android.widget.CheckBox
+import android.widget.TextView
 import android.widget.TimePicker
 import com.mbarlow.automaticprofilechanger.AutomaticProfileChangerApplication
 import com.mbarlow.automaticprofilechanger.R
@@ -37,9 +38,12 @@ class AddNewAlarmActivity : AppCompatActivity(){
         setSupportActionBar(toolbar)
 
         // Get alarm from intent if we're editting
-        alarm = Alarm()
+        var intentAlarm = intent.getSerializableExtra("ALARM")
+        if (intentAlarm != null){
+            alarm = intentAlarm as Alarm
+        }
 
-        nameField.text = alarm.name as Editable?
+        nameField.setText(alarm.name)
 
         // Tick days
         var i = 0

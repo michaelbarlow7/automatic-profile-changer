@@ -24,6 +24,8 @@ public class DaoGenerator {
         alarm.addIntProperty("endTime"); // A number in the range of 0 - 1439
         alarm.addStringProperty("profile").notNull(); // The profile stored on the phone
 
+        alarm.implementsSerializable();
+
         new de.greenrobot.daogenerator.DaoGenerator().generateAll(schema, "../app/src/main/java");
     }
 }

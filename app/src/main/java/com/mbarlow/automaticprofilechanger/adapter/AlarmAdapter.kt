@@ -1,5 +1,6 @@
 package com.mbarlow.automaticprofilechanger.adapter
 
+import android.content.Intent
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
 import com.mbarlow.automaticprofilechanger.R
+import com.mbarlow.automaticprofilechanger.activity.AddNewAlarmActivity
 import com.mbarlow.automaticprofilechanger.model.Alarm
 
 /**
@@ -28,40 +30,32 @@ class AlarmAdapter(private var alarmList: List<Alarm>) : RecyclerView.Adapter<Al
         holder?.bindAlarm(alarmList[position])
     }
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view), View.OnLongClickListener{
         val alarmCheckbox: CheckBox = itemView.findViewById(R.id.alarmCheckbox) as CheckBox
         val daysTextView = itemView.findViewById(R.id.daysTextView) as TextView
         val timesTextView = itemView.findViewById(R.id.timesTextView) as TextView
+        val profileTextView = itemView.findViewById(R.id.alarmProfile) as TextView
+
+        init{
+            itemView.setOnLongClickListener(this)
+        }
 
         fun bindAlarm(alarm: Alarm) {
             with(alarm){
                 alarmCheckbox.text = name
-//                alarmCheckbox.isChecked = alarm.enabled
-//                var stringBuilder = StringBuilder();
-//                if (alarm.enabledSunday){
-//                    stringBuilder.append("Sun, ");
-//                }
-//                if (alarm.enabledMonday){
-//                    stringBuilder.append("Mon, ");
-//                }
-//                if (alarm.enabledTuesday){
-//                    stringBuilder.append("Tue, ");
-//                }
-//                if (alarm.enabledWednesday){
-//                    stringBuilder.append("Wed, ");
-//                }
-//                if (alarm.enabledThursday){
-//                    stringBuilder.append("Thu, ");
-//                }
-//                if (alarm.enabledFriday){
-//                    stringBuilder.append("Fri, ");
-//                }
-//                if (alarm.enabledSaturday){
-//                    stringBuilder.append("Sat");
-//                }
+                profileTextView.text = profile
                 daysTextView.text = alarm.daysEnabledString
                 timesTextView.text = alarm.startTimeString + " - " + alarm.endTimeString
+                itemView.tag = this
             }
         }
+
+        override fun onLongClick(v: View?): Boolean {
+            val addAlarmActivityIntent = Intent(v?.context, AddNewAlarmActivity::class.java)
+            addAlarmActivityIntent.putExtra("ALARM", v?.tag as Alarm)
+            v?.context?.startActivity(addAlarmActivityIntent)
+            return false
+        }
+
     }
 }

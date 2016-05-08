@@ -3,20 +3,40 @@
                 android:padding="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-    <CheckBox
-        android:id="@+id/alarmCheckbox"
+    <!--TODO: I WANT RIPPLE EFFECTS :( -->
+    <LinearLayout
+        android:id="@+id/stringsLayout"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="First alarm"
-        android:textStyle="bold"
-        android:textSize="25sp"
-        />
+        android:padding="5dp"
+        >
+        <CheckBox
+            android:id="@+id/alarmCheckbox"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="First alarm"
+            android:textStyle="bold"
+            android:textSize="25sp"
+            />
+        <TextView
+            android:id="@+id/alarmProfile"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="profile"
+            android:textStyle="italic"
+            android:textSize="25sp"
+            android:gravity="right"
+            />
+    </LinearLayout>
     <LinearLayout
         android:id="@+id/timesLayout"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/alarmCheckbox"
+        android:layout_below="@id/stringsLayout"
         android:padding="5dp"
         >
         <TextView
