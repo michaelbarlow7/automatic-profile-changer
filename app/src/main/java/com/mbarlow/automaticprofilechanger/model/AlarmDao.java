@@ -28,6 +28,7 @@ public class AlarmDao extends AbstractDao<Alarm, Long> {
         public final static Property Enabled = new Property(2, Byte.class, "enabled", false, "ENABLED");
         public final static Property StartTime = new Property(3, Integer.class, "startTime", false, "START_TIME");
         public final static Property EndTime = new Property(4, Integer.class, "endTime", false, "END_TIME");
+        public final static Property Profile = new Property(5, String.class, "profile", false, "PROFILE");
     };
 
 
@@ -47,7 +48,8 @@ public class AlarmDao extends AbstractDao<Alarm, Long> {
                 "\"NAME\" TEXT," + // 1: name
                 "\"ENABLED\" INTEGER," + // 2: enabled
                 "\"START_TIME\" INTEGER," + // 3: startTime
-                "\"END_TIME\" INTEGER);"); // 4: endTime
+                "\"END_TIME\" INTEGER," + // 4: endTime
+                "\"PROFILE\" TEXT);"); // 5: profile
     }
 
     /** Drops the underlying database table. */
@@ -85,6 +87,11 @@ public class AlarmDao extends AbstractDao<Alarm, Long> {
         if (endTime != null) {
             stmt.bindLong(5, endTime);
         }
+ 
+        String profile = entity.getProfile();
+        if (profile != null) {
+            stmt.bindString(6, profile);
+        }
     }
 
     /** @inheritdoc */
@@ -101,7 +108,8 @@ public class AlarmDao extends AbstractDao<Alarm, Long> {
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // name
             cursor.isNull(offset + 2) ? null : (byte) cursor.getShort(offset + 2), // enabled
             cursor.isNull(offset + 3) ? null : cursor.getInt(offset + 3), // startTime
-            cursor.isNull(offset + 4) ? null : cursor.getInt(offset + 4) // endTime
+            cursor.isNull(offset + 4) ? null : cursor.getInt(offset + 4), // endTime
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5) // profile
         );
         return entity;
     }
@@ -114,6 +122,7 @@ public class AlarmDao extends AbstractDao<Alarm, Long> {
         entity.setEnabled(cursor.isNull(offset + 2) ? null : (byte) cursor.getShort(offset + 2));
         entity.setStartTime(cursor.isNull(offset + 3) ? null : cursor.getInt(offset + 3));
         entity.setEndTime(cursor.isNull(offset + 4) ? null : cursor.getInt(offset + 4));
+        entity.setProfile(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
      }
     
     /** @inheritdoc */

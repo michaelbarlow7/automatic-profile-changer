@@ -15,6 +15,7 @@ public class Alarm {
     private Byte enabled;
     private Integer startTime;
     private Integer endTime;
+    private String profile;
 
     // KEEP FIELDS - put your custom fields here
     private static final Pair[] dayMaskPairs = new Pair[]{
@@ -35,12 +36,13 @@ public class Alarm {
         this.id = id;
     }
 
-    public Alarm(Long id, String name, Byte enabled, Integer startTime, Integer endTime) {
+    public Alarm(Long id, String name, Byte enabled, Integer startTime, Integer endTime, String profile) {
         this.id = id;
         this.name = name;
         this.enabled = enabled;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.profile = profile;
     }
 
     public Long getId() {
@@ -83,6 +85,14 @@ public class Alarm {
         this.endTime = endTime;
     }
 
+    public String getProfile() {
+        return profile;
+    }
+
+    public void setProfile(String profile) {
+        this.profile = profile;
+    }
+
     // KEEP METHODS - put your custom methods here
     public boolean isEnabled(){
         return (enabled & 0x80) != 0;
@@ -106,7 +116,7 @@ public class Alarm {
 
     private String getTimeString(Integer time){
         if (time == null){
-            return "NaN";
+            return null;
         }
         if (time < 0 || time > 1439){
             //ERROR: time is out of range

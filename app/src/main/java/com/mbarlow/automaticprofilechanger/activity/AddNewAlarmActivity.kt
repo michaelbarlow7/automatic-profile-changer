@@ -1,8 +1,11 @@
 package com.mbarlow.automaticprofilechanger.activity
 
+import android.app.ProfileManager
 import android.app.TimePickerDialog
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.text.Editable
+import android.widget.ArrayAdapter
 import android.widget.TimePicker
 import com.mbarlow.automaticprofilechanger.R
 import com.mbarlow.automaticprofilechanger.fragment.TimePickerFragment
@@ -34,6 +37,13 @@ class AddNewAlarmActivity : AppCompatActivity(){
         // Get alarm from intent if we're editting
         alarm = Alarm()
 
+        nameField.text = alarm?.name as Editable?
+
+        // Tick days
+
+        startTimeButton.text = alarm?.startTimeString ?: "START TIME"
+        endTimeButton.text = alarm?.endTimeString ?: "END TIME"
+
         startTimeButton.setOnClickListener({ view ->
             val timePickerFragment = TimePickerFragment(startTimePickListener, alarm?.startTimeHours ?: 0, alarm?.startTimeMinutes ?: 0);
             timePickerFragment.show(fragmentManager, "starttimepicker")
@@ -43,6 +53,19 @@ class AddNewAlarmActivity : AppCompatActivity(){
             val timePickerFragment = TimePickerFragment(endTimePickListener, alarm?.endTimeHours ?: 0, alarm?.endTimeMinutes ?: 0);
             timePickerFragment.show(fragmentManager, "endtimepicker")
         })
+
+        //TODO: Exception handling if not cyanogenmod?
+
+        var profileManager = ProfileManager.getService();
+
+        var profileNames = Array(profileManager.profiles.size, {i -> profileManager.profiles[i].name})
+
+        var profilesAdapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, profileNames)
+
+        profilesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+        profileSpinner.adapter = profilesAdapter
+
     }
 
 
