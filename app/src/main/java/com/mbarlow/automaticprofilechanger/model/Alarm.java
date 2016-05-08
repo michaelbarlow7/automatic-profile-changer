@@ -12,9 +12,10 @@ public class Alarm {
 
     private Long id;
     private String name;
-    private Byte enabled;
+    private byte enabled;
     private Integer startTime;
     private Integer endTime;
+    /** Not-null value. */
     private String profile;
 
     // KEEP FIELDS - put your custom fields here
@@ -36,7 +37,7 @@ public class Alarm {
         this.id = id;
     }
 
-    public Alarm(Long id, String name, Byte enabled, Integer startTime, Integer endTime, String profile) {
+    public Alarm(Long id, String name, byte enabled, Integer startTime, Integer endTime, String profile) {
         this.id = id;
         this.name = name;
         this.enabled = enabled;
@@ -61,11 +62,11 @@ public class Alarm {
         this.name = name;
     }
 
-    public Byte getEnabled() {
+    public byte getEnabled() {
         return enabled;
     }
 
-    public void setEnabled(Byte enabled) {
+    public void setEnabled(byte enabled) {
         this.enabled = enabled;
     }
 
@@ -85,10 +86,12 @@ public class Alarm {
         this.endTime = endTime;
     }
 
+    /** Not-null value. */
     public String getProfile() {
         return profile;
     }
 
+    /** Not-null value; ensure this value is available before it is saved to the database. */
     public void setProfile(String profile) {
         this.profile = profile;
     }
@@ -157,8 +160,7 @@ public class Alarm {
     }
 
     private int convertHoursAndMinutes(int hour, int minute){
-        int result = (hour * 60) + minute;
-        return result;
+        return (hour * 60) + minute;
     }
 
     public void setStartTime(int hour, int minute){
@@ -167,6 +169,20 @@ public class Alarm {
 
     public void setEndTime(int hour, int minute){
         endTime = convertHoursAndMinutes(hour, minute);
+    }
+
+    public boolean isDayAtIndexEnabled(int index){
+        int mask = (int) dayMaskPairs[index].second;
+        return (mask & enabled) != 0;
+    }
+
+    public void setDayAtIndexEnabled(int index, boolean isEnabled){
+        int mask = (int) dayMaskPairs[index].second;
+        if (isEnabled){
+            enabled = (byte) (enabled | mask);
+        }else{
+            enabled = (byte) (enabled & ~mask);
+        }
     }
     // KEEP METHODS END
 

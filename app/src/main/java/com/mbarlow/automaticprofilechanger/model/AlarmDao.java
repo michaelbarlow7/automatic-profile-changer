@@ -25,7 +25,7 @@ public class AlarmDao extends AbstractDao<Alarm, Long> {
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
         public final static Property Name = new Property(1, String.class, "name", false, "NAME");
-        public final static Property Enabled = new Property(2, Byte.class, "enabled", false, "ENABLED");
+        public final static Property Enabled = new Property(2, byte.class, "enabled", false, "ENABLED");
         public final static Property StartTime = new Property(3, Integer.class, "startTime", false, "START_TIME");
         public final static Property EndTime = new Property(4, Integer.class, "endTime", false, "END_TIME");
         public final static Property Profile = new Property(5, String.class, "profile", false, "PROFILE");
@@ -46,10 +46,10 @@ public class AlarmDao extends AbstractDao<Alarm, Long> {
         db.execSQL("CREATE TABLE " + constraint + "\"ALARM\" (" + //
                 "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
                 "\"NAME\" TEXT," + // 1: name
-                "\"ENABLED\" INTEGER," + // 2: enabled
+                "\"ENABLED\" INTEGER NOT NULL ," + // 2: enabled
                 "\"START_TIME\" INTEGER," + // 3: startTime
                 "\"END_TIME\" INTEGER," + // 4: endTime
-                "\"PROFILE\" TEXT);"); // 5: profile
+                "\"PROFILE\" TEXT NOT NULL );"); // 5: profile
     }
 
     /** Drops the underlying database table. */
@@ -72,11 +72,7 @@ public class AlarmDao extends AbstractDao<Alarm, Long> {
         if (name != null) {
             stmt.bindString(2, name);
         }
- 
-        Byte enabled = entity.getEnabled();
-        if (enabled != null) {
-            stmt.bindLong(3, enabled);
-        }
+        stmt.bindLong(3, entity.getEnabled());
  
         Integer startTime = entity.getStartTime();
         if (startTime != null) {
@@ -87,11 +83,7 @@ public class AlarmDao extends AbstractDao<Alarm, Long> {
         if (endTime != null) {
             stmt.bindLong(5, endTime);
         }
- 
-        String profile = entity.getProfile();
-        if (profile != null) {
-            stmt.bindString(6, profile);
-        }
+        stmt.bindString(6, entity.getProfile());
     }
 
     /** @inheritdoc */
@@ -106,10 +98,10 @@ public class AlarmDao extends AbstractDao<Alarm, Long> {
         Alarm entity = new Alarm( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // name
-            cursor.isNull(offset + 2) ? null : (byte) cursor.getShort(offset + 2), // enabled
+            (byte) cursor.getShort(offset + 2), // enabled
             cursor.isNull(offset + 3) ? null : cursor.getInt(offset + 3), // startTime
             cursor.isNull(offset + 4) ? null : cursor.getInt(offset + 4), // endTime
-            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5) // profile
+            cursor.getString(offset + 5) // profile
         );
         return entity;
     }
@@ -119,10 +111,10 @@ public class AlarmDao extends AbstractDao<Alarm, Long> {
     public void readEntity(Cursor cursor, Alarm entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setName(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
-        entity.setEnabled(cursor.isNull(offset + 2) ? null : (byte) cursor.getShort(offset + 2));
+        entity.setEnabled((byte) cursor.getShort(offset + 2));
         entity.setStartTime(cursor.isNull(offset + 3) ? null : cursor.getInt(offset + 3));
         entity.setEndTime(cursor.isNull(offset + 4) ? null : cursor.getInt(offset + 4));
-        entity.setProfile(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
+        entity.setProfile(cursor.getString(offset + 5));
      }
     
     /** @inheritdoc */

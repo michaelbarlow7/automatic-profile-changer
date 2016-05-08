@@ -33,23 +33,24 @@ class MainActivity : AppCompatActivity() {
 //        alarm2.endTime = 1099
 
 //        alarmDao.insertInTx(alarm1, alarm2)
+
+        fab.setOnClickListener { view ->
+            val addAlarmActivityIntent = Intent(view.context, AddNewAlarmActivity::class.java)
+            view.context.startActivity(addAlarmActivityIntent)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
         //TODO: Seems more verbose than a Java cast, there's probably a better way
-        val myApp : AutomaticProfileChangerApplication = application as AutomaticProfileChangerApplication
+        val myApp = application as AutomaticProfileChangerApplication
         val alarmDao = myApp.daoSession.alarmDao
 
         val alarmList = alarmDao.loadAll()
 
         var alarmAdapter = AlarmAdapter(alarmList)
 
-//        val intent = Intent(this, AddNewAlarmActivity.class)
-
         alarmRecyclerView.adapter = alarmAdapter;
-        fab.setOnClickListener { view ->
-           /* new activity here */
-//            val intent = Intent(AddNewAlarmActivity.class);
-            val addAlarmActivityIntent = Intent(view.context, AddNewAlarmActivity::class.java)
-            view.context.startActivity(addAlarmActivityIntent)
-//            Snackbar.make(view, "TODO: Add alarm here", Snackbar.LENGTH_LONG).setAction("Action", null).show()
-        }
     }
 }
