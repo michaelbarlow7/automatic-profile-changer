@@ -1,5 +1,6 @@
 package com.mbarlow.automaticprofilechanger.activity
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
@@ -37,11 +38,19 @@ class MainActivity : AppCompatActivity() {
         val myApp : AutomaticProfileChangerApplication = application as AutomaticProfileChangerApplication
         val alarmDao = myApp.daoSession.alarmDao
 
-        val alarmList = alarmDao.loadAll();
+        val alarmList = alarmDao.loadAll()
 
-        var alarmAdapter = AlarmAdapter(alarmList);
+        var alarmAdapter = AlarmAdapter(alarmList)
+
+//        val intent = Intent(this, AddNewAlarmActivity.class)
 
         alarmRecyclerView.adapter = alarmAdapter;
-        fab.setOnClickListener { view -> Snackbar.make(view, "TODO: Add alarm here", Snackbar.LENGTH_LONG).setAction("Action", null).show() }
+        fab.setOnClickListener { view ->
+           /* new activity here */
+//            val intent = Intent(AddNewAlarmActivity.class);
+            val addAlarmActivityIntent = Intent(view.context, AddNewAlarmActivity::class.java)
+            view.context.startActivity(addAlarmActivityIntent)
+//            Snackbar.make(view, "TODO: Add alarm here", Snackbar.LENGTH_LONG).setAction("Action", null).show()
+        }
     }
 }
