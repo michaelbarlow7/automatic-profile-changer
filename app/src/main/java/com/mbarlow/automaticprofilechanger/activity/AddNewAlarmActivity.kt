@@ -5,6 +5,8 @@ import android.app.TimePickerDialog
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.text.Editable
+import android.util.Log
+import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.CheckBox
 import android.widget.TextView
@@ -13,6 +15,7 @@ import com.mbarlow.automaticprofilechanger.AutomaticProfileChangerApplication
 import com.mbarlow.automaticprofilechanger.R
 import com.mbarlow.automaticprofilechanger.fragment.TimePickerFragment
 import com.mbarlow.automaticprofilechanger.model.Alarm
+import com.mbarlow.automaticprofilechanger.model.AlarmDao
 import kotlinx.android.synthetic.main.activity_add_alarm.*
 import kotlinx.android.synthetic.main.content_add_alarm.*
 
@@ -87,24 +90,89 @@ class AddNewAlarmActivity : AppCompatActivity(){
 
         profileSpinner.setSelection(alarmProfileIndex)
 
-        confirmButton.setOnClickListener({view ->
-            // Save alarm
-            alarm.name = nameField.text.toString()
-            var i = 0
-            while(i < enabledDaysLayout.childCount){
-                var dayCheckBox = enabledDaysLayout.getChildAt(i) as CheckBox
-                alarm.setDayAtIndexEnabled(i, dayCheckBox.isChecked)
-                i++
+        confirmButton.setOnClickListener { view ->
+            var j = 0
+            while(j < enabledDaysLayout.childCount){
+                var dayCheckBox = enabledDaysLayout.getChildAt(j) as CheckBox
+                alarm.setDayAtIndexEnabled(j, dayCheckBox.isChecked)
+                j++
             }
-            alarm.profile = profileSpinner.selectedItem.toString()
 
-
+            //TODO: Check for empty/invalid fields
             val myApp = application as AutomaticProfileChangerApplication
             val alarmDao = myApp.daoSession.alarmDao
+
+            var enabledFlags = (alarm.enabled.toInt() and 0x7F)
+
+            //TODO: Use columnNames
+
+            // Check if there are any overlaps in the same day
+            var query = alarmDao.queryRaw("WHERE (ENABLED | ? != 0) " +
+            "AND (_ID != ? ) " +
+            "AND (END_TIME > START_TIME) " +
+            "AND (END_TIME > ? ) " +
+            "AND (START_TIME < ? )",
+                    enabledFlags.toString(),
+                    alarm.id.toString(),
+                    alarm.startTime.toString(),
+                    alarm.endTime.toString())
+
+            if (query.count() > 0){
+                Log.e("TAG", "Error!! Overlap with an alarm from today!")
+                finish()
+                return@setOnClickListener
+            }
+            var yesterdayEnabled = (enabledFlags shl 1)
+            // Need to wrap around for saturday
+            var saturday = (yesterdayEnabled and 0x80)
+            if (saturday != 0){
+                yesterdayEnabled = (yesterdayEnabled or 0x01)
+                yesterdayEnabled = (yesterdayEnabled and 0x7f)
+            }
+
+            query = alarmDao.queryRaw("WHERE (ENABLED | ? != 0) " +
+                    "AND (_ID != ? ) " +
+                    "AND (END_TIME < START_TIME) " +
+                    "AND (END_TIME > ? ) ",
+                    yesterdayEnabled.toString(),
+                    alarm.id.toString(),
+                    alarm.startTime.toString())
+
+            if (query.count() > 0){
+                Log.e("TAG", "Error!! Overlap with an alarm from yesterday!")
+                finish()
+                return@setOnClickListener
+            }
+
+            if (alarm.endTime < alarm.startTime){
+                val saturdayEnabled = (enabledFlags and 0x01)
+                var tomorrowEnabled = (enabledFlags shr 1)
+                if (saturdayEnabled != 0){
+                    tomorrowEnabled = (tomorrowEnabled or 0x40)
+                }
+
+                query = alarmDao.queryRaw("WHERE (ENABLED | ? != 0) " +
+                        "AND (_ID != ? ) " +
+                        "AND (START_TIME < ? ) ",
+                        tomorrowEnabled.toString(),
+                        alarm.id.toString(),
+                        alarm.endTime.toString())
+
+                if (query.count() > 0){
+                    Log.e("TAG", "Error!! Overlap with an alarm tomorrow!")
+                    finish()
+                    return@setOnClickListener
+                }
+            }
+
+            // Save alarm
+            alarm.name = nameField.text.toString()
+            alarm.profile = profileSpinner.selectedItem.toString()
             alarmDao.insertOrReplace(alarm)
+            //TODO: Schedule next alarm
 
             finish()
-        })
+        }
 
         cancelButton.setOnClickListener({view ->
             finish()
