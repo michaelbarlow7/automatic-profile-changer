@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import com.mbarlow.automaticprofilechanger.AutomaticProfileChangerApplication
 import com.mbarlow.automaticprofilechanger.R
 import com.mbarlow.automaticprofilechanger.adapter.AlarmAdapter
-import com.mbarlow.automaticprofilechanger.model.DaoMaster
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 
@@ -16,15 +16,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-
-        //TODO: Move this to the application class when we create it
-
-        val helper = DaoMaster.DevOpenHelper(this, "alarm-db", null)
-        val db = helper.writableDatabase
-
-        val daoMaster = DaoMaster(db)
-        val daoSession = daoMaster.newSession()
-        val alarmDao = daoSession.alarmDao
 
         alarmRecyclerView.setHasFixedSize(true) // I think this is true
         alarmRecyclerView.layoutManager = LinearLayoutManager(this)
@@ -42,6 +33,9 @@ class MainActivity : AppCompatActivity() {
 //        alarm2.endTime = 1099
 
 //        alarmDao.insertInTx(alarm1, alarm2)
+        //TODO: Seems more verbose than a Java cast, there's probably a better way
+        val myApp : AutomaticProfileChangerApplication = application as AutomaticProfileChangerApplication
+        val alarmDao = myApp.daoSession.alarmDao
 
         val alarmList = alarmDao.loadAll();
 
