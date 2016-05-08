@@ -5,8 +5,6 @@ package com.mbarlow.automaticprofilechanger.model;
 // KEEP INCLUDES - put your custom includes here
 import android.util.Pair;
 // KEEP INCLUDES END
-
-
 /**
  * Entity mapped to table "ALARM".
  */
@@ -95,14 +93,38 @@ public class Alarm {
         boolean isFirst = true;
         for (Pair<String, Integer> dayMaskPair : dayMaskPairs){
             if ((enabled & dayMaskPair.second) != 0){
-                if (!isFirst){
-                    stringBuilder.append(", ");
+                if (isFirst){
                     isFirst = false;
+                }else{
+                    stringBuilder.append(", ");
                 }
                 stringBuilder.append(dayMaskPair.first);
             }
         }
         return stringBuilder.toString();
+    }
+
+    private String getTimeString(int time){
+        if (time < 0 || time > 1439){
+            //ERROR: time is out of range
+            return Integer.toString(time);
+        }
+        String ampm = "am";
+        int hours = time / 60;
+        if (hours > 12){
+            hours -= 12;
+            ampm = "pm";
+        }
+        int mins = time % 60;
+        return String.format("%d:%02d %s", hours, mins, ampm);
+    }
+
+    public String getStartTimeString(){
+        return getTimeString(startTime);
+    }
+
+    public String getEndTimeString(){
+        return getTimeString(endTime);
     }
     // KEEP METHODS END
 

@@ -6,11 +6,9 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import com.mbarlow.automaticprofilechanger.R
 import com.mbarlow.automaticprofilechanger.adapter.AlarmAdapter
-import com.mbarlow.automaticprofilechanger.model.Alarm
 import com.mbarlow.automaticprofilechanger.model.DaoMaster
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -46,10 +44,6 @@ class MainActivity : AppCompatActivity() {
 //        alarmDao.insertInTx(alarm1, alarm2)
 
         val alarmList = alarmDao.loadAll();
-
-//        val alarmList = ArrayList<Alarm>();
-//        alarmList.add(alarm1);
-//        alarmList.add(alarm2);
 
         var alarmAdapter = AlarmAdapter(alarmList);
 

@@ -60,7 +60,7 @@ class AlarmAdapter(private var alarmList: List<Alarm>) : RecyclerView.Adapter<Al
 //                    stringBuilder.append("Sat");
 //                }
                 daysTextView.text = alarm.daysEnabledString
-//                timesTextView.text = alarm.startTime + " - " + alarm.endTime
+                timesTextView.text = alarm.startTimeString + " - " + alarm.endTimeString
             }
         }
     }
