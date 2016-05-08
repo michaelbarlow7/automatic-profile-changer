@@ -2,4 +2,9 @@
     <string name="app_name">Automatic Profile Changer</string>
     <string name="action_settings">Settings</string>
     <string name="new_alarm">New alarm</string>
+    <string-array name="fake_profiles">
+        <item>FDefault</item>
+        <item>FSilent</item>
+        <item>FVibrate</item>
+    </string-array>
 </resources>
