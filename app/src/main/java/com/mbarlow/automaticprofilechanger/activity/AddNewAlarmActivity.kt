@@ -7,10 +7,7 @@ import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.util.Log
 import android.view.View
-import android.widget.ArrayAdapter
-import android.widget.CheckBox
-import android.widget.TextView
-import android.widget.TimePicker
+import android.widget.*
 import com.mbarlow.automaticprofilechanger.AutomaticProfileChangerApplication
 import com.mbarlow.automaticprofilechanger.R
 import com.mbarlow.automaticprofilechanger.fragment.TimePickerFragment
@@ -39,11 +36,15 @@ class AddNewAlarmActivity : AppCompatActivity(){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_alarm)
         setSupportActionBar(toolbar)
+        //TODO: Add up/back button up the top
 
         // Get alarm from intent if we're editting
         var intentAlarm = intent.getSerializableExtra("ALARM")
         if (intentAlarm != null){
+            //TODO: Change title to "Edit alarm" or something
             alarm = intentAlarm as Alarm
+        }else{
+            deleteButton.visibility = View.GONE
         }
 
         nameField.setText(alarm.name)
@@ -97,6 +98,25 @@ class AddNewAlarmActivity : AppCompatActivity(){
                 alarm.setDayAtIndexEnabled(j, dayCheckBox.isChecked)
                 j++
             }
+            if (nameField.text.isNullOrEmpty()){
+                Toast.makeText(view.context, "No name set", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+
+            if (alarm.enabled.toInt() == 0){
+                Toast.makeText(view.context, "No days set", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+
+            if (alarm.startTime == null){
+                Toast.makeText(view.context, "Start time not set", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+
+            if (alarm.endTime == null){
+                Toast.makeText(view.context, "End time not set", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
 
             //TODO: Check for empty/invalid fields
             val myApp = application as AutomaticProfileChangerApplication
@@ -113,7 +133,7 @@ class AddNewAlarmActivity : AppCompatActivity(){
             "AND (END_TIME > ? ) " +
             "AND (START_TIME < ? )",
                     enabledFlags.toString(),
-                    alarm.id.toString(),
+                    alarm.id?.toString() ?: "-1",
                     alarm.startTime.toString(),
                     alarm.endTime.toString())
 
@@ -135,7 +155,7 @@ class AddNewAlarmActivity : AppCompatActivity(){
                     "AND (END_TIME < START_TIME) " +
                     "AND (END_TIME > ? ) ",
                     yesterdayEnabled.toString(),
-                    alarm.id.toString(),
+                    alarm.id?.toString() ?: "-1",
                     alarm.startTime.toString())
 
             if (query.count() > 0){
@@ -155,7 +175,7 @@ class AddNewAlarmActivity : AppCompatActivity(){
                         "AND (_ID != ? ) " +
                         "AND (START_TIME < ? ) ",
                         tomorrowEnabled.toString(),
-                        alarm.id.toString(),
+                        alarm.id?.toString() ?: "-1",
                         alarm.endTime.toString())
 
                 if (query.count() > 0){
@@ -166,6 +186,7 @@ class AddNewAlarmActivity : AppCompatActivity(){
             }
 
             // Save alarm
+            alarm.enabled = (alarm.enabled.toInt() and 0x80).toByte()
             alarm.name = nameField.text.toString()
             alarm.profile = profileSpinner.selectedItem.toString()
             alarmDao.insertOrReplace(alarm)
@@ -174,9 +195,17 @@ class AddNewAlarmActivity : AppCompatActivity(){
             finish()
         }
 
-        cancelButton.setOnClickListener({view ->
+        cancelButton.setOnClickListener {
             finish()
-        })
+        }
+
+        deleteButton.setOnClickListener {
+            //TODO: Show a dialog
+            val myApp = application as AutomaticProfileChangerApplication
+            val alarmDao = myApp.daoSession.alarmDao
+            alarmDao.delete(alarm)
+            finish()
+        }
     }
 
 
