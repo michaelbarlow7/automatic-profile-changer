@@ -104,7 +104,10 @@ public class Alarm {
         return stringBuilder.toString();
     }
 
-    private String getTimeString(int time){
+    private String getTimeString(Integer time){
+        if (time == null){
+            return "NaN";
+        }
         if (time < 0 || time > 1439){
             //ERROR: time is out of range
             return Integer.toString(time);
@@ -119,12 +122,41 @@ public class Alarm {
         return String.format("%d:%02d %s", hours, mins, ampm);
     }
 
+    public int getStartTimeHours(){
+        return startTime == null ? 0 : startTime / 60;
+    }
+
+    public int getStartTimeMinutes(){
+        return startTime == null ? 0 : startTime % 60;
+    }
+
+    public int getEndTimeHours(){
+        return endTime == null ? 0 : endTime/ 60;
+    }
+
+    public int getEndTimeMinutes(){
+        return endTime == null ? 0 : endTime % 60;
+    }
+
     public String getStartTimeString(){
         return getTimeString(startTime);
     }
 
     public String getEndTimeString(){
         return getTimeString(endTime);
+    }
+
+    private int convertHoursAndMinutes(int hour, int minute){
+        int result = (hour * 60) + minute;
+        return result;
+    }
+
+    public void setStartTime(int hour, int minute){
+        startTime = convertHoursAndMinutes(hour, minute);
+    }
+
+    public void setEndTime(int hour, int minute){
+        endTime = convertHoursAndMinutes(hour, minute);
     }
     // KEEP METHODS END
 
