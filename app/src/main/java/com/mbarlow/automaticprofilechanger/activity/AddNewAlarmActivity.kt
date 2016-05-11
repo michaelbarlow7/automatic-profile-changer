@@ -186,7 +186,8 @@ class AddNewAlarmActivity : AppCompatActivity(){
             }
 
             // Save alarm
-            alarm.enabled = (alarm.enabled.toInt() and 0x80).toByte()
+            //TODO: Only do the following if it's a new alarm
+            alarm.enabled = (alarm.enabled.toInt() or 0x80).toByte()
             alarm.name = nameField.text.toString()
             alarm.profile = profileSpinner.selectedItem.toString()
             alarmDao.insertOrReplace(alarm)

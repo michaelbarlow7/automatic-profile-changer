@@ -17,6 +17,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="First alarm"
+            android:singleLine="true"
+            android:ellipsize="end"
             android:textStyle="bold"
             android:textSize="25sp"
             />

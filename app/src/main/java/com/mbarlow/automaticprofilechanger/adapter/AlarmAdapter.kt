@@ -6,7 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
+import android.widget.CompoundButton
 import android.widget.TextView
+import com.mbarlow.automaticprofilechanger.AutomaticProfileChangerApplication
 import com.mbarlow.automaticprofilechanger.R
 import com.mbarlow.automaticprofilechanger.activity.AddNewAlarmActivity
 import com.mbarlow.automaticprofilechanger.model.Alarm
@@ -30,7 +32,8 @@ class AlarmAdapter(private var alarmList: List<Alarm>) : RecyclerView.Adapter<Al
         holder?.bindAlarm(alarmList[position])
     }
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view), View.OnLongClickListener{
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view), View.OnLongClickListener, CompoundButton.OnCheckedChangeListener{
+
         val alarmCheckbox: CheckBox = itemView.findViewById(R.id.alarmCheckbox) as CheckBox
         val daysTextView = itemView.findViewById(R.id.daysTextView) as TextView
         val timesTextView = itemView.findViewById(R.id.timesTextView) as TextView
@@ -38,11 +41,13 @@ class AlarmAdapter(private var alarmList: List<Alarm>) : RecyclerView.Adapter<Al
 
         init{
             itemView.setOnLongClickListener(this)
+            alarmCheckbox.setOnCheckedChangeListener(this)
         }
 
         fun bindAlarm(alarm: Alarm) {
             with(alarm){
                 alarmCheckbox.text = name
+                alarmCheckbox.isChecked = isEnabled
                 profileTextView.text = profile
                 daysTextView.text = alarm.daysEnabledString
                 timesTextView.text = alarm.startTimeString + " - " + alarm.endTimeString
@@ -57,5 +62,14 @@ class AlarmAdapter(private var alarmList: List<Alarm>) : RecyclerView.Adapter<Al
             return false
         }
 
+        override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
+            if (itemView.tag == null){
+                return
+            }
+            val alarm = itemView.tag as Alarm
+            val myApp = buttonView?.context?.applicationContext as AutomaticProfileChangerApplication
+            alarm.setIsEnabled(isChecked)
+            myApp.daoSession.insertOrReplace(alarm)
+        }
     }
 }

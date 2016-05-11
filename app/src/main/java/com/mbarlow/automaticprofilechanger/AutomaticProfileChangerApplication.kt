@@ -1,6 +1,7 @@
 package com.mbarlow.automaticprofilechanger
 
 import android.app.Application
+import com.mbarlow.automaticprofilechanger.model.AlarmDataHelper
 import com.mbarlow.automaticprofilechanger.model.DaoMaster
 import com.mbarlow.automaticprofilechanger.model.DaoSession
 
@@ -15,6 +16,10 @@ class AutomaticProfileChangerApplication : Application() {
 
         val daoMaster = DaoMaster(db)
         daoMaster.newSession()
+    }
+
+    val alarmDataHelper : AlarmDataHelper by lazy {
+        AlarmDataHelper(this)
     }
 
 }

@@ -3,8 +3,7 @@
           xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
-    <!-- Might need this later -->
-    <!--<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />-->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:allowBackup="true"
@@ -27,6 +26,14 @@
             android:name=".activity.AddNewAlarmActivity"
             android:label="@string/new_alarm"
             android:theme="@style/AppTheme.NoActionBar"/>
+        <receiver android:name=".receiver.AlarmBroadcastReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

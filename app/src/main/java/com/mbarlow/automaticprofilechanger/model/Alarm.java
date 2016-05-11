@@ -19,7 +19,7 @@ public class Alarm implements java.io.Serializable {
     private String profile;
 
     // KEEP FIELDS - put your custom fields here
-    private static final Pair[] dayMaskPairs = new Pair[]{
+    public static final Pair[] dayMaskPairs = new Pair[]{
             new Pair<>("Sun", 0x40),
             new Pair<>("Mon", 0x20),
             new Pair<>("Tue", 0x10),
@@ -99,6 +99,14 @@ public class Alarm implements java.io.Serializable {
     // KEEP METHODS - put your custom methods here
     public boolean isEnabled(){
         return (enabled & 0x80) != 0;
+    }
+
+    public void setIsEnabled(boolean isEnabled){
+        if (isEnabled){
+            enabled |= 0x80;
+        }else{
+            enabled &= 0x7F;
+        }
     }
 
     public String getDaysEnabledString() {

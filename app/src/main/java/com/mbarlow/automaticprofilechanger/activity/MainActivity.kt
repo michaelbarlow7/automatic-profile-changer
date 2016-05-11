@@ -20,23 +20,11 @@ class MainActivity : AppCompatActivity() {
         alarmRecyclerView.setHasFixedSize(true) // I think this is true
         alarmRecyclerView.layoutManager = LinearLayoutManager(this)
 
-//        val alarm1 = Alarm()
-//        alarm1.name = "First alarm"
-//        alarm1.enabled = 0x3F
-//        alarm1.startTime = 243
-//        alarm1.endTime = 1299
-//
-//        val alarm2 = Alarm()
-//        alarm2.name = "Second alarm"
-//        alarm2.enabled = 0x23
-//        alarm2.startTime = 443
-//        alarm2.endTime = 1099
-
-//        alarmDao.insertInTx(alarm1, alarm2)
-
         fab.setOnClickListener { view ->
             val addAlarmActivityIntent = Intent(view.context, AddNewAlarmActivity::class.java)
             view.context.startActivity(addAlarmActivityIntent)
+//            val myApp = application as AutomaticProfileChangerApplication
+//            myApp.alarmDataHelper.findAndSetNextAlarm()
         }
     }
 
