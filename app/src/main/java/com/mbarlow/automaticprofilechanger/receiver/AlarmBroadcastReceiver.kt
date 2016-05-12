@@ -20,44 +20,52 @@
 
 package com.mbarlow.automaticprofilechanger.receiver
 
+import android.app.ProfileManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import com.mbarlow.automaticprofilechanger.AutomaticProfileChangerApplication
 
 class AlarmBroadcastReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
-        //		ProfileSwitcher profileSwitcher = new ProfileSwitcher(context);
-        //Set the next alarm - do this first in case anything funny happens later
-        //		profileSwitcher.setNextAlarm();
 
+        val myApp = context.applicationContext as AutomaticProfileChangerApplication
+        if (intent.action == Intent.ACTION_BOOT_COMPLETED || intent.action == Intent.ACTION_MY_PACKAGE_REPLACED){
+            // Reboot
+            val sharedPreferences = context.getSharedPreferences("END_ALARM_PREFERENCE", 0)
+            val profile = sharedPreferences.getString("existingProfile", null)
+            if (profile != null){
+                val time = sharedPreferences.getLong("alarmTime", -1L) // Stores time as long
+                if (System.currentTimeMillis() <= time){
+                    // Set alarm to change back to profile
+                    // TODO: need to work out logic for  creating a calendar object for the next alarm (probably in AlarmDataHelper)
+                    return
+                }
 
-        if (intent.action != null && (intent.action == Intent.ACTION_BOOT_COMPLETED || intent.action == Intent.ACTION_MY_PACKAGE_REPLACED)) {
-            //			ProfileSwitcher.myLog("Received intent " + intent.getAction() );
-            //			profileSwitcher.startService();
+                // We've passed the time for this alarm, so clear prefs and set next stored alarm
+                sharedPreferences.edit().clear().apply()
+            }
+
+            // Find and set alarm for next profile
+            myApp.alarmDataHelper.findAndSetNextAlarm()
+            return
+        }
+        // If this isn't a boot, this is an alarm
+
+        val profile = intent.getStringExtra("profile") ?: return
+        val profileManager = ProfileManager.getService();
+        val existingProfile = profileManager.activeProfile
+
+        profileManager.setActiveProfileByName(profile)
+
+        val endTime = intent.getLongExtra("endTime", -1L)
+        if (endTime < 0){
             return
         }
 
-        //check if we are in the middle of a timed profile - timedProfileExires
-        //	find profile to switch to 
-        //	set setdelayedProfileName
-        //		Calendar timedProfileExires = profileSwitcher.getTimedProfileExires();
-        //		if (timedProfileExires != null && timedProfileExires.after(Calendar.getInstance())) {
-        //we are in the middle of a timed profile - 
-        //set the profile that we want to revert to
-        //			profileSwitcher.setTimedProfileToRevertTo(profileSwitcher.getCurrentScheduledProfile());
-        //			profileSwitcher.myToast("When timed profile has finished, profile will be set to " +
-        //					profileSwitcher.getCurrentScheduledProfile());
-        //ProfileSwitcher.getProfileName(profileSwitcher.getCurrentScheduledProfile()));
-        //			return;
-        //		}
+        //TODO: Set endtime using alarmDataHelper
 
-        //If we have reached here, then we are doing either 
-        // 1. resetting a profile after a timed profile
-        // 2. or a normal scheduled change
-        //		String nextProfile = profileSwitcher.getProfileToChangeTo();
-        //		ProfileSwitcher.myLog("In ScheduleBroadcastReceiver - switching to " + nextProfile);
-        //		profileSwitcher.setActiveProfile(nextProfile);
         return
     }
 }

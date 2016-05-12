@@ -22,7 +22,7 @@ class AlarmDataHelper(val application: AutomaticProfileChangerApplication) {
 
     fun resetAlarm(){
         val sharedPreferences = application.getSharedPreferences("END_ALARM_PREFERENCE", 0)
-        if (sharedPreferences.contains("profile")){
+        if (sharedPreferences.contains("existingProfile")){
             // We're already in an alarm period, don't mess with it
             return
         }
