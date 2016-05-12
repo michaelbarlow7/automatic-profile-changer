@@ -44,7 +44,7 @@ class AlarmDataHelper(val application: AutomaticProfileChangerApplication) {
         var result : Alarm? = null
         do {
             var dayMask = (Alarm.dayMaskPairs[day].second as Int or 0x80) // Alarm must be enabled
-            val qb = daoSession.queryBuilder(Alarm::class.java)
+            val qb = daoSession.alarmDao.queryBuilder()
             qb.where(WhereCondition.StringCondition("ENABLED & $dayMask == $dayMask"),AlarmDao.Properties.StartTime.gt(currentTime))
             qb.orderAsc(AlarmDao.Properties.StartTime)
 

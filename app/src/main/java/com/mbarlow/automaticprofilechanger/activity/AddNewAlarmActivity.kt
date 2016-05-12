@@ -13,6 +13,8 @@ import com.mbarlow.automaticprofilechanger.R
 import com.mbarlow.automaticprofilechanger.fragment.TimePickerFragment
 import com.mbarlow.automaticprofilechanger.model.Alarm
 import com.mbarlow.automaticprofilechanger.model.AlarmDao
+import de.greenrobot.dao.query.QueryBuilder
+import de.greenrobot.dao.query.WhereCondition
 import kotlinx.android.synthetic.main.activity_add_alarm.*
 import kotlinx.android.synthetic.main.content_add_alarm.*
 
@@ -118,30 +120,28 @@ class AddNewAlarmActivity : AppCompatActivity(){
                 return@setOnClickListener
             }
 
-            //TODO: Check for empty/invalid fields
             val myApp = application as AutomaticProfileChangerApplication
             val alarmDao = myApp.daoSession.alarmDao
 
-            var enabledFlags = (alarm.enabled.toInt() and 0x7F)
+            val enabledFlags = (alarm.enabled.toInt() and 0x7F)
 
-            //TODO: Use columnNames
+            //TODO: Edge cases where hours line up
+            val todayQueryBuilder = alarmDao.queryBuilder()
+            todayQueryBuilder.where(WhereCondition.StringCondition("${AlarmDao.Properties.Enabled.columnName} | ${enabledFlags.toString()} != 0"),
+                    AlarmDao.Properties.Id.notEq(alarm.id ?: "-1"),
+                    WhereCondition.StringCondition("${AlarmDao.Properties.EndTime.columnName} > ${AlarmDao.Properties.StartTime.columnName}"),
+                    AlarmDao.Properties.EndTime.gt(alarm.startTime),
+                    AlarmDao.Properties.StartTime.lt(alarm.endTime))
 
-            // Check if there are any overlaps in the same day
-            var query = alarmDao.queryRaw("WHERE (ENABLED | ? != 0) " +
-            "AND (_ID != ? ) " +
-            "AND (END_TIME > START_TIME) " +
-            "AND (END_TIME > ? ) " +
-            "AND (START_TIME < ? )",
-                    enabledFlags.toString(),
-                    alarm.id?.toString() ?: "-1",
-                    alarm.startTime.toString(),
-                    alarm.endTime.toString())
+            val todayQuery = todayQueryBuilder.list()
 
-            if (query.count() > 0){
+            if (todayQuery.count() > 0){
+                //TODO: Turn into toast
                 Log.e("TAG", "Error!! Overlap with an alarm from today!")
                 finish()
                 return@setOnClickListener
             }
+
             var yesterdayEnabled = (enabledFlags shl 1)
             // Need to wrap around for saturday
             var saturday = (yesterdayEnabled and 0x80)
@@ -150,35 +150,40 @@ class AddNewAlarmActivity : AppCompatActivity(){
                 yesterdayEnabled = (yesterdayEnabled and 0x7f)
             }
 
-            query = alarmDao.queryRaw("WHERE (ENABLED | ? != 0) " +
-                    "AND (_ID != ? ) " +
-                    "AND (END_TIME < START_TIME) " +
-                    "AND (END_TIME > ? ) ",
-                    yesterdayEnabled.toString(),
-                    alarm.id?.toString() ?: "-1",
-                    alarm.startTime.toString())
+            // Checking days before
+            val yesterdayQueryBuilder = alarmDao.queryBuilder()
+            yesterdayQueryBuilder.where(WhereCondition.StringCondition("${AlarmDao.Properties.Enabled.columnName} | ${yesterdayEnabled.toString()} != 0"),
+                    AlarmDao.Properties.Id.notEq(alarm.id ?: "-1"),
+                    WhereCondition.StringCondition("${AlarmDao.Properties.EndTime.columnName} < ${AlarmDao.Properties.StartTime.columnName}"),
+                    AlarmDao.Properties.EndTime.gt(alarm.startTime))
 
-            if (query.count() > 0){
+
+            val yesterdayQuery = yesterdayQueryBuilder.list()
+
+            if (yesterdayQuery.count() > 0){
+                //TODO: Toast
                 Log.e("TAG", "Error!! Overlap with an alarm from yesterday!")
                 finish()
                 return@setOnClickListener
             }
 
-            if (alarm.endTime < alarm.startTime){
+            // Checking days after
+            if (alarm.endTime <= alarm.startTime){
                 val saturdayEnabled = (enabledFlags and 0x01)
                 var tomorrowEnabled = (enabledFlags shr 1)
                 if (saturdayEnabled != 0){
                     tomorrowEnabled = (tomorrowEnabled or 0x40)
                 }
 
-                query = alarmDao.queryRaw("WHERE (ENABLED | ? != 0) " +
-                        "AND (_ID != ? ) " +
-                        "AND (START_TIME < ? ) ",
-                        tomorrowEnabled.toString(),
-                        alarm.id?.toString() ?: "-1",
-                        alarm.endTime.toString())
+                val tomorrowQueryBuilder = alarmDao.queryBuilder()
+                tomorrowQueryBuilder.where(WhereCondition.StringCondition("${AlarmDao.Properties.Enabled.columnName} | ${tomorrowEnabled.toString()} != 0"),
+                        AlarmDao.Properties.Id.notEq(alarm.id ?: "-1"),
+                        AlarmDao.Properties.StartTime.lt(alarm.endTime))
 
-                if (query.count() > 0){
+                val tomorrowQuery = tomorrowQueryBuilder.list()
+
+                if (tomorrowQuery.count() > 0){
+                    //TODO: TOAST!
                     Log.e("TAG", "Error!! Overlap with an alarm tomorrow!")
                     finish()
                     return@setOnClickListener
