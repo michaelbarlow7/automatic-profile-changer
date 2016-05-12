@@ -127,7 +127,7 @@ class AddNewAlarmActivity : AppCompatActivity(){
 
             //TODO: Edge cases where hours line up
             val todayQueryBuilder = alarmDao.queryBuilder()
-            todayQueryBuilder.where(WhereCondition.StringCondition("${AlarmDao.Properties.Enabled.columnName} | ${enabledFlags.toString()} != 0"),
+            todayQueryBuilder.where(WhereCondition.StringCondition("${AlarmDao.Properties.Enabled.columnName} & ${enabledFlags.toString()} != 0"),
                     AlarmDao.Properties.Id.notEq(alarm.id ?: "-1"),
                     WhereCondition.StringCondition("${AlarmDao.Properties.EndTime.columnName} > ${AlarmDao.Properties.StartTime.columnName}"),
                     AlarmDao.Properties.EndTime.gt(alarm.startTime),
@@ -136,9 +136,7 @@ class AddNewAlarmActivity : AppCompatActivity(){
             val todayQuery = todayQueryBuilder.list()
 
             if (todayQuery.count() > 0){
-                //TODO: Turn into toast
-                Log.e("TAG", "Error!! Overlap with an alarm from today!")
-                finish()
+                Toast.makeText(view.context, "Overlap with an alarm set on same day(s)", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
 
@@ -152,7 +150,7 @@ class AddNewAlarmActivity : AppCompatActivity(){
 
             // Checking days before
             val yesterdayQueryBuilder = alarmDao.queryBuilder()
-            yesterdayQueryBuilder.where(WhereCondition.StringCondition("${AlarmDao.Properties.Enabled.columnName} | ${yesterdayEnabled.toString()} != 0"),
+            yesterdayQueryBuilder.where(WhereCondition.StringCondition("${AlarmDao.Properties.Enabled.columnName} & ${yesterdayEnabled.toString()} != 0"),
                     AlarmDao.Properties.Id.notEq(alarm.id ?: "-1"),
                     WhereCondition.StringCondition("${AlarmDao.Properties.EndTime.columnName} < ${AlarmDao.Properties.StartTime.columnName}"),
                     AlarmDao.Properties.EndTime.gt(alarm.startTime))
@@ -161,9 +159,7 @@ class AddNewAlarmActivity : AppCompatActivity(){
             val yesterdayQuery = yesterdayQueryBuilder.list()
 
             if (yesterdayQuery.count() > 0){
-                //TODO: Toast
-                Log.e("TAG", "Error!! Overlap with an alarm from yesterday!")
-                finish()
+                Toast.makeText(view.context, "Overlap with an alarm set on day(s) before", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
 
@@ -176,16 +172,14 @@ class AddNewAlarmActivity : AppCompatActivity(){
                 }
 
                 val tomorrowQueryBuilder = alarmDao.queryBuilder()
-                tomorrowQueryBuilder.where(WhereCondition.StringCondition("${AlarmDao.Properties.Enabled.columnName} | ${tomorrowEnabled.toString()} != 0"),
+                tomorrowQueryBuilder.where(WhereCondition.StringCondition("${AlarmDao.Properties.Enabled.columnName} & ${tomorrowEnabled.toString()} != 0"),
                         AlarmDao.Properties.Id.notEq(alarm.id ?: "-1"),
                         AlarmDao.Properties.StartTime.lt(alarm.endTime))
 
                 val tomorrowQuery = tomorrowQueryBuilder.list()
 
                 if (tomorrowQuery.count() > 0){
-                    //TODO: TOAST!
-                    Log.e("TAG", "Error!! Overlap with an alarm tomorrow!")
-                    finish()
+                    Toast.makeText(view.context, "Overlap with an alarm set on day(s) after", Toast.LENGTH_LONG).show()
                     return@setOnClickListener
                 }
             }
