@@ -120,12 +120,16 @@ class AddNewAlarmActivity : AppCompatActivity(){
                 return@setOnClickListener
             }
 
+            if (alarm.startTime == alarm.endTime){
+                Toast.makeText(view.context, "Start time and end time can't be the same", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+
             val myApp = application as AutomaticProfileChangerApplication
             val alarmDao = myApp.daoSession.alarmDao
 
             val enabledFlags = (alarm.enabled.toInt() and 0x7F)
 
-            //TODO: Edge cases where hours line up
             val todayQueryBuilder = alarmDao.queryBuilder()
             todayQueryBuilder.where(WhereCondition.StringCondition("${AlarmDao.Properties.Enabled.columnName} & ${enabledFlags.toString()} != 0"),
                     AlarmDao.Properties.Id.notEq(alarm.id ?: "-1"),
