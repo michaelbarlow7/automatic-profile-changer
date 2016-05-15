@@ -4,16 +4,16 @@ import android.app.ProfileManager
 import android.app.TimePickerDialog
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.text.Editable
-import android.util.Log
 import android.view.View
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.CheckBox
+import android.widget.TimePicker
+import android.widget.Toast
 import com.mbarlow.automaticprofilechanger.AutomaticProfileChangerApplication
 import com.mbarlow.automaticprofilechanger.R
 import com.mbarlow.automaticprofilechanger.fragment.TimePickerFragment
 import com.mbarlow.automaticprofilechanger.model.Alarm
 import com.mbarlow.automaticprofilechanger.model.AlarmDao
-import de.greenrobot.dao.query.QueryBuilder
 import de.greenrobot.dao.query.WhereCondition
 import kotlinx.android.synthetic.main.activity_add_alarm.*
 import kotlinx.android.synthetic.main.content_add_alarm.*
@@ -41,7 +41,7 @@ class AddNewAlarmActivity : AppCompatActivity(){
         //TODO: Add up/back button up the top
 
         // Get alarm from intent if we're editting
-        var intentAlarm = intent.getSerializableExtra("ALARM")
+        val intentAlarm = intent.getSerializableExtra("ALARM")
         if (intentAlarm != null){
             //TODO: Change title to "Edit alarm" or something
             alarm = intentAlarm as Alarm
@@ -54,7 +54,7 @@ class AddNewAlarmActivity : AppCompatActivity(){
         // Tick days
         var i = 0
         while(i < enabledDaysLayout.childCount){
-            var dayCheckBox = enabledDaysLayout.getChildAt(i) as CheckBox
+            val dayCheckBox = enabledDaysLayout.getChildAt(i) as CheckBox
             dayCheckBox.isChecked = alarm.isDayAtIndexEnabled(i)!!
             i++
         }
@@ -74,9 +74,9 @@ class AddNewAlarmActivity : AppCompatActivity(){
 
         //TODO: Exception handling if not cyanogenmod?
 
-        var profileManager = ProfileManager.getService();
+        val profileManager = ProfileManager.getService();
 
-        var profileNames = Array(profileManager.profiles.size, {i -> profileManager.profiles[i].name})
+        val profileNames = Array(profileManager.profiles.size, {i -> profileManager.profiles[i].name})
         var alarmProfileIndex = 0
         for (i in profileNames.indices){
             if (profileNames[i].equals(alarm.profile)){
@@ -85,7 +85,7 @@ class AddNewAlarmActivity : AppCompatActivity(){
             }
         }
 
-        var profilesAdapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, profileNames)
+        val profilesAdapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, profileNames)
 
         profilesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 

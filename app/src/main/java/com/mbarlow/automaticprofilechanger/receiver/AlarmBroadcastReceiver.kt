@@ -20,6 +20,8 @@
 
 package com.mbarlow.automaticprofilechanger.receiver
 
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.app.ProfileManager
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -29,6 +31,7 @@ import com.mbarlow.automaticprofilechanger.AutomaticProfileChangerApplication
 class AlarmBroadcastReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
+        //TODO: Show notification for debugging
 
         val myApp = context.applicationContext as AutomaticProfileChangerApplication
         if (intent.action == Intent.ACTION_BOOT_COMPLETED || intent.action == Intent.ACTION_MY_PACKAGE_REPLACED){
@@ -39,7 +42,8 @@ class AlarmBroadcastReceiver : BroadcastReceiver() {
                 val time = sharedPreferences.getLong("alarmTime", -1L) // Stores time as long
                 if (System.currentTimeMillis() <= time){
                     // Set alarm to change back to profile
-                    // TODO: need to work out logic for  creating a calendar object for the next alarm (probably in AlarmDataHelper)
+                    setEndAlarm(context, profile, time)
+
                     return
                 }
 
@@ -59,13 +63,30 @@ class AlarmBroadcastReceiver : BroadcastReceiver() {
 
         profileManager.setActiveProfileByName(profile)
 
+        if (!intent.getBooleanExtra("isStart", true)){
+            val sharedPreferences = context.getSharedPreferences("END_ALARM_PREFERENCE", 0)
+            sharedPreferences.edit().clear().apply()
+            myApp.alarmDataHelper.findAndSetNextAlarm()
+            return
+        }
+
         val endTime = intent.getLongExtra("endTime", -1L)
         if (endTime < 0){
             return
         }
 
-        //TODO: Set endtime using alarmDataHelper
+        setEndAlarm(context, existingProfile.name, endTime)
 
         return
+    }
+
+    private fun setEndAlarm(context: Context, profile: String?, time: Long) {
+        val alarmIntent = Intent(context, AlarmBroadcastReceiver::class.java)
+        alarmIntent.putExtra("isStart", false)
+        alarmIntent.putExtra("alarmProfile", profile)
+        val pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0)
+
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.set(AlarmManager.RTC_WAKEUP, time, pendingIntent)
     }
 }

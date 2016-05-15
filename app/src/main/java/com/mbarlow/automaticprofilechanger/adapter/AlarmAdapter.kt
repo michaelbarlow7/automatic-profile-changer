@@ -70,6 +70,7 @@ class AlarmAdapter(private var alarmList: List<Alarm>) : RecyclerView.Adapter<Al
             val myApp = buttonView?.context?.applicationContext as AutomaticProfileChangerApplication
             alarm.setIsEnabled(isChecked)
             myApp.daoSession.insertOrReplace(alarm)
+            //TODO: Need to reset the next alarm
         }
     }
 }
