@@ -30,10 +30,6 @@ class AddNewAlarmActivity : AppCompatActivity(){
         alarm.setStartTime(hourOfDay, minute)
         startTimeButton.text = alarm.startTimeString
     })
-    val endTimePickListener = TimePickerDialog.OnTimeSetListener({view: TimePicker?, hourOfDay: Int, minute: Int ->
-        alarm.setEndTime(hourOfDay, minute)
-        endTimeButton.text = alarm.endTimeString
-    })
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,16 +60,10 @@ class AddNewAlarmActivity : AppCompatActivity(){
         }
 
         startTimeButton.text = alarm.startTimeString ?: "START TIME"
-        endTimeButton.text = alarm.endTimeString ?: "END TIME"
 
         startTimeButton.setOnClickListener({ view ->
             val timePickerFragment = TimePickerFragment(startTimePickListener, alarm.startTimeHours, alarm.startTimeMinutes);
             timePickerFragment.show(fragmentManager, "starttimepicker")
-        })
-
-        endTimeButton.setOnClickListener({ view ->
-            val timePickerFragment = TimePickerFragment(endTimePickListener, alarm.endTimeHours, alarm.endTimeMinutes);
-            timePickerFragment.show(fragmentManager, "endtimepicker")
         })
 
         //TODO: Exception handling if not cyanogenmod
@@ -119,77 +109,22 @@ class AddNewAlarmActivity : AppCompatActivity(){
                 return@setOnClickListener
             }
 
-            if (alarm.endTime == null){
-                Toast.makeText(view.context, "End time not set", Toast.LENGTH_LONG).show()
-                return@setOnClickListener
-            }
-
-            if (alarm.startTime == alarm.endTime){
-                Toast.makeText(view.context, "Start time and end time can't be the same", Toast.LENGTH_LONG).show()
-                return@setOnClickListener
-            }
-
             val myApp = application as AutomaticProfileChangerApplication
             val alarmDao = myApp.daoSession.alarmDao
 
             val enabledFlags = (alarm.enabled.toInt() and 0x7F)
 
-            val todayQueryBuilder = alarmDao.queryBuilder()
-            todayQueryBuilder.where(WhereCondition.StringCondition("${AlarmDao.Properties.Enabled.columnName} & ${enabledFlags.toString()} != 0"),
+            // Need to check we're not setting alarms on the same time
+            val queryBuilder = alarmDao.queryBuilder()
+            queryBuilder.where(WhereCondition.StringCondition("${AlarmDao.Properties.Enabled.columnName} & ${enabledFlags.toString()} != 0"),
                     AlarmDao.Properties.Id.notEq(alarm.id ?: "-1"),
-                    WhereCondition.StringCondition("${AlarmDao.Properties.EndTime.columnName} > ${AlarmDao.Properties.StartTime.columnName}"),
-                    AlarmDao.Properties.EndTime.gt(alarm.startTime),
-                    AlarmDao.Properties.StartTime.lt(alarm.endTime))
+                    AlarmDao.Properties.StartTime.eq(alarm.startTime))
 
-            val todayQuery = todayQueryBuilder.list()
+            val query = queryBuilder.list()
 
-            if (todayQuery.count() > 0){
-                Toast.makeText(view.context, "Overlap with an alarm set on same day(s)", Toast.LENGTH_LONG).show()
+            if (query.count() > 0){
+                Toast.makeText(view.context, "Clashing with one or more alarms set on same day(s)", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
-            }
-
-            var yesterdayEnabled = (enabledFlags shl 1)
-            // Need to wrap around for saturday
-            var saturday = (yesterdayEnabled and 0x80)
-            if (saturday != 0){
-                yesterdayEnabled = (yesterdayEnabled or 0x01)
-                yesterdayEnabled = (yesterdayEnabled and 0x7f)
-            }
-
-            // Checking days before
-            val yesterdayQueryBuilder = alarmDao.queryBuilder()
-            yesterdayQueryBuilder.where(WhereCondition.StringCondition("${AlarmDao.Properties.Enabled.columnName} & ${yesterdayEnabled.toString()} != 0"),
-                    AlarmDao.Properties.Id.notEq(alarm.id ?: "-1"),
-                    WhereCondition.StringCondition("${AlarmDao.Properties.EndTime.columnName} < ${AlarmDao.Properties.StartTime.columnName}"),
-                    AlarmDao.Properties.EndTime.gt(alarm.startTime))
-
-
-            val yesterdayQuery = yesterdayQueryBuilder.list()
-
-            if (yesterdayQuery.count() > 0){
-                Toast.makeText(view.context, "Overlap with an alarm set on day(s) before", Toast.LENGTH_LONG).show()
-                return@setOnClickListener
-            }
-
-            // Checking days after
-            if (alarm.endTime <= alarm.startTime){
-                val saturdayEnabled = (enabledFlags and 0x01)
-                var tomorrowEnabled = (enabledFlags shr 1)
-                if (saturdayEnabled != 0){
-                    tomorrowEnabled = (tomorrowEnabled or 0x40)
-                }
-
-                val tomorrowQueryBuilder = alarmDao.queryBuilder()
-                tomorrowQueryBuilder.where(WhereCondition.StringCondition("${AlarmDao.Properties.Enabled.columnName} & ${tomorrowEnabled.toString()} != 0"),
-                        AlarmDao.Properties.Id.notEq(alarm.id ?: "-1"),
-                        AlarmDao.Properties.StartTime.lt(alarm.endTime))
-
-                val tomorrowQuery = tomorrowQueryBuilder.list()
-
-                if (tomorrowQuery.count() > 0){
-                    Toast.makeText(view.context, "Overlap with an alarm set on day(s) after", Toast.LENGTH_LONG).show()
-                    return@setOnClickListener
-                }
             }
 
             // Save alarm

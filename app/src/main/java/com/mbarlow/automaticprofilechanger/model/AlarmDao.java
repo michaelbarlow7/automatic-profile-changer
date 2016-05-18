@@ -27,8 +27,7 @@ public class AlarmDao extends AbstractDao<Alarm, Long> {
         public final static Property Name = new Property(1, String.class, "name", false, "NAME");
         public final static Property Enabled = new Property(2, byte.class, "enabled", false, "ENABLED");
         public final static Property StartTime = new Property(3, Integer.class, "startTime", false, "START_TIME");
-        public final static Property EndTime = new Property(4, Integer.class, "endTime", false, "END_TIME");
-        public final static Property Profile = new Property(5, String.class, "profile", false, "PROFILE");
+        public final static Property Profile = new Property(4, String.class, "profile", false, "PROFILE");
     };
 
 
@@ -48,8 +47,7 @@ public class AlarmDao extends AbstractDao<Alarm, Long> {
                 "\"NAME\" TEXT," + // 1: name
                 "\"ENABLED\" INTEGER NOT NULL ," + // 2: enabled
                 "\"START_TIME\" INTEGER," + // 3: startTime
-                "\"END_TIME\" INTEGER," + // 4: endTime
-                "\"PROFILE\" TEXT NOT NULL );"); // 5: profile
+                "\"PROFILE\" TEXT NOT NULL );"); // 4: profile
     }
 
     /** Drops the underlying database table. */
@@ -78,12 +76,7 @@ public class AlarmDao extends AbstractDao<Alarm, Long> {
         if (startTime != null) {
             stmt.bindLong(4, startTime);
         }
- 
-        Integer endTime = entity.getEndTime();
-        if (endTime != null) {
-            stmt.bindLong(5, endTime);
-        }
-        stmt.bindString(6, entity.getProfile());
+        stmt.bindString(5, entity.getProfile());
     }
 
     /** @inheritdoc */
@@ -100,8 +93,7 @@ public class AlarmDao extends AbstractDao<Alarm, Long> {
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // name
             (byte) cursor.getShort(offset + 2), // enabled
             cursor.isNull(offset + 3) ? null : cursor.getInt(offset + 3), // startTime
-            cursor.isNull(offset + 4) ? null : cursor.getInt(offset + 4), // endTime
-            cursor.getString(offset + 5) // profile
+            cursor.getString(offset + 4) // profile
         );
         return entity;
     }
@@ -113,8 +105,7 @@ public class AlarmDao extends AbstractDao<Alarm, Long> {
         entity.setName(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
         entity.setEnabled((byte) cursor.getShort(offset + 2));
         entity.setStartTime(cursor.isNull(offset + 3) ? null : cursor.getInt(offset + 3));
-        entity.setEndTime(cursor.isNull(offset + 4) ? null : cursor.getInt(offset + 4));
-        entity.setProfile(cursor.getString(offset + 5));
+        entity.setProfile(cursor.getString(offset + 4));
      }
     
     /** @inheritdoc */

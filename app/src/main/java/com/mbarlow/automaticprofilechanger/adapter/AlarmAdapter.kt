@@ -50,7 +50,7 @@ class AlarmAdapter(private var alarmList: List<Alarm>) : RecyclerView.Adapter<Al
                 alarmCheckbox.isChecked = isEnabled
                 profileTextView.text = profile
                 daysTextView.text = alarm.daysEnabledString
-                timesTextView.text = alarm.startTimeString + " - " + alarm.endTimeString
+                timesTextView.text = alarm.startTimeString
                 itemView.tag = this
             }
         }

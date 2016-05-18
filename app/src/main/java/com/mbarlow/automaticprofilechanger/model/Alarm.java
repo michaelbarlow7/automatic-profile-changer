@@ -14,7 +14,6 @@ public class Alarm implements java.io.Serializable {
     private String name;
     private byte enabled;
     private Integer startTime;
-    private Integer endTime;
     /** Not-null value. */
     private String profile;
 
@@ -37,12 +36,11 @@ public class Alarm implements java.io.Serializable {
         this.id = id;
     }
 
-    public Alarm(Long id, String name, byte enabled, Integer startTime, Integer endTime, String profile) {
+    public Alarm(Long id, String name, byte enabled, Integer startTime, String profile) {
         this.id = id;
         this.name = name;
         this.enabled = enabled;
         this.startTime = startTime;
-        this.endTime = endTime;
         this.profile = profile;
     }
 
@@ -76,14 +74,6 @@ public class Alarm implements java.io.Serializable {
 
     public void setStartTime(Integer startTime) {
         this.startTime = startTime;
-    }
-
-    public Integer getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(Integer endTime) {
-        this.endTime = endTime;
     }
 
     /** Not-null value. */
@@ -151,20 +141,8 @@ public class Alarm implements java.io.Serializable {
         return startTime == null ? 0 : startTime % 60;
     }
 
-    public int getEndTimeHours(){
-        return endTime == null ? 0 : endTime/ 60;
-    }
-
-    public int getEndTimeMinutes(){
-        return endTime == null ? 0 : endTime % 60;
-    }
-
     public String getStartTimeString(){
         return getTimeString(startTime);
-    }
-
-    public String getEndTimeString(){
-        return getTimeString(endTime);
     }
 
     private int convertHoursAndMinutes(int hour, int minute){
@@ -173,10 +151,6 @@ public class Alarm implements java.io.Serializable {
 
     public void setStartTime(int hour, int minute){
         startTime = convertHoursAndMinutes(hour, minute);
-    }
-
-    public void setEndTime(int hour, int minute){
-        endTime = convertHoursAndMinutes(hour, minute);
     }
 
     public boolean isDayAtIndexEnabled(int index){

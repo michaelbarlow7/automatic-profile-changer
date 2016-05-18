@@ -19,12 +19,6 @@ class AlarmDataHelper(val application: AutomaticProfileChangerApplication) {
     }
 
     fun resetAlarm(){
-        val sharedPreferences = application.getSharedPreferences("END_ALARM_PREFERENCE", 0)
-        if (sharedPreferences.contains("existingProfile")){
-            // We're already in an alarm period, don't mess with it
-            return
-        }
-
         val intent = getIntent()
         val pendingIntent = PendingIntent.getBroadcast(application, 0, intent, 0)
         val alarmManager = application.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -39,8 +33,6 @@ class AlarmDataHelper(val application: AutomaticProfileChangerApplication) {
         val today = currentCalendar.get(Calendar.DAY_OF_WEEK) - 1 // 0-indexing it
         var currentTime = currentCalendar.get(Calendar.HOUR_OF_DAY) * 60 + currentCalendar.get(Calendar.MINUTE)
 
-        //TODO: If the startTime for an alarm is the current time, set the profile to that start and set the
-        // alarm for the end
         var day = today
         var nextAlarm : Alarm? = null
         do {
@@ -83,14 +75,6 @@ class AlarmDataHelper(val application: AutomaticProfileChangerApplication) {
         }
 
         val alarmTime = currentCalendar.timeInMillis
-
-        // Get endTime and put in intent
-        if (nextAlarm.startTime > nextAlarm.endTime){
-            currentCalendar.add(Calendar.DAY_OF_MONTH, 1)
-        }
-        currentCalendar.set(Calendar.MINUTE, nextAlarm.endTimeMinutes)
-        currentCalendar.set(Calendar.HOUR_OF_DAY, nextAlarm.endTimeHours)
-        intent.putExtra("endTime", currentCalendar.timeInMillis)
 
         val pendingIntent = PendingIntent.getBroadcast(application, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent)

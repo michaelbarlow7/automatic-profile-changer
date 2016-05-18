@@ -21,7 +21,8 @@ public class DaoGenerator {
         // from Sunday through to Saturday.
         alarm.addByteProperty("enabled").notNull();
         alarm.addIntProperty("startTime"); // A number in the range of 0 - 1439
-        alarm.addIntProperty("endTime"); // A number in the range of 0 - 1439
+        // This was too complex for me to bother implementing properly
+//        alarm.addIntProperty("endTime"); // A number in the range of 0 - 1439
         alarm.addStringProperty("profile").notNull(); // The profile stored on the phone
 
         alarm.implementsSerializable();
