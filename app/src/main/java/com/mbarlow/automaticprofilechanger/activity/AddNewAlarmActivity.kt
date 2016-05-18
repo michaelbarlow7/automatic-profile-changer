@@ -24,6 +24,7 @@ import kotlinx.android.synthetic.main.content_add_alarm.*
 class AddNewAlarmActivity : AppCompatActivity(){
 
     var alarm = Alarm()
+    var editting = false
 
     val startTimePickListener = TimePickerDialog.OnTimeSetListener({view: TimePicker?, hourOfDay: Int, minute: Int ->
         alarm.setStartTime(hourOfDay, minute)
@@ -38,13 +39,16 @@ class AddNewAlarmActivity : AppCompatActivity(){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_alarm)
         setSupportActionBar(toolbar)
-        //TODO: Add up/back button up the top
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowCustomEnabled(true)
 
         // Get alarm from intent if we're editting
         val intentAlarm = intent.getSerializableExtra("ALARM")
         if (intentAlarm != null){
-            //TODO: Change title to "Edit alarm" or something
+            supportActionBar?.title = "Edit Alarm"
             alarm = intentAlarm as Alarm
+            editting = true
         }else{
             deleteButton.visibility = View.GONE
         }
@@ -72,7 +76,7 @@ class AddNewAlarmActivity : AppCompatActivity(){
             timePickerFragment.show(fragmentManager, "endtimepicker")
         })
 
-        //TODO: Exception handling if not cyanogenmod?
+        //TODO: Exception handling if not cyanogenmod
 
         val profileManager = ProfileManager.getService();
 
@@ -189,12 +193,14 @@ class AddNewAlarmActivity : AppCompatActivity(){
             }
 
             // Save alarm
-            //TODO: Only do the following if it's a new alarm
-            alarm.enabled = (alarm.enabled.toInt() or 0x80).toByte()
+            if (!editting){
+                alarm.enabled = (alarm.enabled.toInt() or 0x80).toByte()
+            }
             alarm.name = nameField.text.toString()
             alarm.profile = profileSpinner.selectedItem.toString()
             alarmDao.insertOrReplace(alarm)
-            //TODO: Schedule next alarm
+
+            (applicationContext as AutomaticProfileChangerApplication).alarmDataHelper.resetAlarm()
 
             finish()
         }
@@ -204,10 +210,10 @@ class AddNewAlarmActivity : AppCompatActivity(){
         }
 
         deleteButton.setOnClickListener {
-            //TODO: Show a dialog
             val myApp = application as AutomaticProfileChangerApplication
             val alarmDao = myApp.daoSession.alarmDao
             alarmDao.delete(alarm)
+            (applicationContext as AutomaticProfileChangerApplication).alarmDataHelper.resetAlarm()
             finish()
         }
     }

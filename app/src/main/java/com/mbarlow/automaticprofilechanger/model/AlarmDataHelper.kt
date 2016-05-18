@@ -92,7 +92,7 @@ class AlarmDataHelper(val application: AutomaticProfileChangerApplication) {
         currentCalendar.set(Calendar.HOUR_OF_DAY, nextAlarm.endTimeHours)
         intent.putExtra("endTime", currentCalendar.timeInMillis)
 
-        val pendingIntent = PendingIntent.getBroadcast(application, 0, intent, 0)
+        val pendingIntent = PendingIntent.getBroadcast(application, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent)
     }
 }

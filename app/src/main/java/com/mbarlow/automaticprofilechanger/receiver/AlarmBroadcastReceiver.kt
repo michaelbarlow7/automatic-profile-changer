@@ -21,17 +21,23 @@
 package com.mbarlow.automaticprofilechanger.receiver
 
 import android.app.AlarmManager
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.ProfileManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.support.v7.app.NotificationCompat
+import android.text.format.Time
+import android.util.Log
 import com.mbarlow.automaticprofilechanger.AutomaticProfileChangerApplication
+import com.mbarlow.automaticprofilechanger.R
+import java.util.*
 
 class AlarmBroadcastReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
-        //TODO: Show notification for debugging
+        Log.d("TAG", "Received broadcast!"  + intent)
 
         val myApp = context.applicationContext as AutomaticProfileChangerApplication
         if (intent.action == Intent.ACTION_BOOT_COMPLETED || intent.action == Intent.ACTION_MY_PACKAGE_REPLACED){
@@ -56,12 +62,22 @@ class AlarmBroadcastReceiver : BroadcastReceiver() {
             return
         }
         // If this isn't a boot, this is an alarm
-
-        val profile = intent.getStringExtra("profile") ?: return
+        val profile = intent.getStringExtra("alarmProfile") ?: return
         val profileManager = ProfileManager.getService();
+
         val existingProfile = profileManager.activeProfile
 
+
         profileManager.setActiveProfileByName(profile)
+
+        // DEBUG STUFF
+        val builder = NotificationCompat.Builder(context)
+        builder.setSmallIcon(R.drawable.ic_stat_action_notification)
+        builder.setContentTitle("Profile changed")
+        val calendar = Calendar.getInstance()
+        builder.setContentText("Profile: $profile at: ${calendar.get(Calendar.HOUR_OF_DAY)} : ${calendar.get(Calendar.MINUTE)}")
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(1, builder.build())
 
         if (!intent.getBooleanExtra("isStart", true)){
             val sharedPreferences = context.getSharedPreferences("END_ALARM_PREFERENCE", 0)

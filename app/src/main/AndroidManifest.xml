@@ -24,6 +24,7 @@
         </activity>
         <activity
             android:name=".activity.AddNewAlarmActivity"
+            android:parentActivityName=".activity.MainActivity"
             android:label="@string/new_alarm"
             android:theme="@style/AppTheme.NoActionBar"/>
         <receiver android:name=".receiver.AlarmBroadcastReceiver" >
