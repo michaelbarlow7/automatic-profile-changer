@@ -24,6 +24,8 @@ class MainActivity : AppCompatActivity() {
             val addAlarmActivityIntent = Intent(view.context, AddNewAlarmActivity::class.java)
             view.context.startActivity(addAlarmActivityIntent)
         }
+
+        (application as AutomaticProfileChangerApplication).alarmDataHelper.resetAlarm()
     }
 
     override fun onResume() {

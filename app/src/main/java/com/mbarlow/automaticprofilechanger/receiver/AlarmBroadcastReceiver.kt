@@ -20,16 +20,12 @@
 
 package com.mbarlow.automaticprofilechanger.receiver
 
-import android.app.NotificationManager
 import android.app.ProfileManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.support.v7.app.NotificationCompat
 import android.util.Log
 import com.mbarlow.automaticprofilechanger.AutomaticProfileChangerApplication
-import com.mbarlow.automaticprofilechanger.R
-import java.util.*
 
 class AlarmBroadcastReceiver : BroadcastReceiver() {
 
@@ -37,7 +33,7 @@ class AlarmBroadcastReceiver : BroadcastReceiver() {
         Log.d("TAG", "Received broadcast!"  + intent)
 
         val myApp = context.applicationContext as AutomaticProfileChangerApplication
-        if (intent.action == Intent.ACTION_BOOT_COMPLETED || intent.action == Intent.ACTION_MY_PACKAGE_REPLACED){
+        if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
             // Reboot
             myApp.alarmDataHelper.findAndSetNextAlarm()
             return
@@ -50,13 +46,13 @@ class AlarmBroadcastReceiver : BroadcastReceiver() {
         profileManager.setActiveProfileByName(profile)
 
         // DEBUG STUFF
-        val builder = NotificationCompat.Builder(context)
-        builder.setSmallIcon(R.drawable.ic_stat_action_notification)
-        builder.setContentTitle("Profile changed")
-        val calendar = Calendar.getInstance()
-        builder.setContentText("Profile: $profile at: ${calendar.get(Calendar.HOUR_OF_DAY)} : ${calendar.get(Calendar.MINUTE)}")
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.notify(1, builder.build())
+//        val builder = NotificationCompat.Builder(context)
+//        builder.setSmallIcon(R.drawable.ic_stat_action_notification)
+//        builder.setContentTitle("Profile changed")
+//        val calendar = Calendar.getInstance()
+//        builder.setContentText("Profile: $profile at: ${calendar.get(Calendar.HOUR_OF_DAY)} : ${calendar.get(Calendar.MINUTE)}")
+//        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+//        notificationManager.notify(1, builder.build())
         // END OF DEBUG STUFF
 
         myApp.alarmDataHelper.findAndSetNextAlarm()
