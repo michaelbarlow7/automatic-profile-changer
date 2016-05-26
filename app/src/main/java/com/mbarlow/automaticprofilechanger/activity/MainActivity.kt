@@ -23,21 +23,17 @@ class MainActivity : AppCompatActivity() {
         fab.setOnClickListener { view ->
             val addAlarmActivityIntent = Intent(view.context, AddNewAlarmActivity::class.java)
             view.context.startActivity(addAlarmActivityIntent)
-//            val myApp = application as AutomaticProfileChangerApplication
-//            myApp.alarmDataHelper.findAndSetNextAlarm()
         }
     }
 
     override fun onResume() {
         super.onResume()
 
-        //TODO: Seems more verbose than a Java cast, there's probably a better way
-        val myApp = application as AutomaticProfileChangerApplication
-        val alarmDao = myApp.daoSession.alarmDao
+        val alarmDao = (application as AutomaticProfileChangerApplication).daoSession.alarmDao
 
         val alarmList = alarmDao.loadAll()
 
-        var alarmAdapter = AlarmAdapter(alarmList)
+        val alarmAdapter = AlarmAdapter(alarmList)
 
         alarmRecyclerView.adapter = alarmAdapter;
     }
