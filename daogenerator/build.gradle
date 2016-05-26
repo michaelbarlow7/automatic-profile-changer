@@ -1,0 +1,8 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = "com.automaticprofilechange.daogenerator.DaoGenerator"
+dependencies {
+    compile 'org.greenrobot:greendao-generator:2.2.0'
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}
